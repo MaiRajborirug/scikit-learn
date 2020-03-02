@@ -88,9 +88,9 @@ datasets = [
                **blobs_params)[0],
     make_blobs(centers=[[2, 2], [-2, -2]], cluster_std=[1.5, .3],
                **blobs_params)[0],
-    4. * (make_moons(n_samples=n_samples, noise=.05, random_state=0)[0] -
+    4. * (make_moons(n_samples=n_inliers, noise=.05, random_state=0)[0] -
           np.array([0.5, 0.25])),
-    14. * (np.random.RandomState(42).rand(n_samples, 2) - 0.5)]
+    14. * (np.random.RandomState(42).rand(n_inliers, 2) - 0.5)]
 
 # Compare given classifiers under given settings
 xx, yy = np.meshgrid(np.linspace(-7, 7, 150),
