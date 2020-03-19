@@ -1,11 +1,12 @@
 """
-===================================
+==================================
 Anomaly detection's ROC benchmarks
-===================================
-Comparison of LocalOutlierFactor and IsolationForest performances on
-classical anomaly detection datasets using ROC curves. Note that
-LocalOutlierFactor is not meant to predict on a test set by default and its
-performance is assessed in an outlier detection context:
+==================================
+
+This example benchmarks outlier detection algorithms using ROC curves.
+The data are from classical anomaly detection datasets. Note that one of the
+algorithm, LocalOutlierFactor, is not meant to predict on a test set by default
+and its performance is assessed in an outlier detection context:
 
 1. Both models are trained on the whole dataset which is assumed to contain
 outliers.
