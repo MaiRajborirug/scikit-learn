@@ -4,11 +4,10 @@ Anomaly detection's ROC benchmarks
 ==================================
 
 This example benchmarks outlier detection algorithms using ROC curves.
-The data are from classical anomaly detection datasets. Note that one of the
-algorithm, LocalOutlierFactor, is not meant to predict on a test set by default
-and its performance is assessed in an outlier detection context:
+The data are from classical anomaly detection datasets, and the algorithms'
+performance is assessed in an outlier detection context:
 
-1. Both models are trained on the whole dataset which is assumed to contain
+1. The algorithms are trained on the whole dataset which is assumed to contain
 outliers.
 2. The ROC curve is computed on the same dataset using the knowledge of the
 labels.
