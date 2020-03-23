@@ -96,7 +96,12 @@ Overview of outlier detection methods
 A comparison of the outlier detection algorithms in scikit-learn. Local
 Outlier Factor (LOF) does not show a decision boundary in black as it
 has no predict method to be applied on new data when it is used for outlier
-detection. 
+detection.
+
+.. figure:: ../auto_examples/images/sphx_glr_plot_anomaly_comparison_001.png
+   :target: ../auto_examples/plot_anomaly_comparison.html
+   :align: center
+   :scale: 50
 
 :class:`ensemble.IsolationForest` and :class:`neighbors.LocalOutlierFactor`
 perform reasonably well on the data sets considered here.
@@ -107,22 +112,6 @@ an ellipse. For more details on the different estimators refer to the example
 :ref:`sphx_glr_auto_examples_plot_anomaly_comparison.py` and the sections
 hereunder.
 
-.. figure:: ../auto_examples/images/sphx_glr_plot_anomaly_comparison_001.png
-   :target: ../auto_examples/plot_anomaly_comparison.html
-   :align: center
-   :scale: 50
-
-The following figure benchmarks outlier detection algorithms using ROC
-(Receiver Operating Characteristics) curve on fives different datasets. 
-:class:`ensemble.IsolationForest` outperforms
-:class:`neighbors.LocalOutlierFactor` because LOF is not meant to predict on
-a test set by default.
-
-.. figure:: sphx_glr_plot_anomaly_bench_001.png
-   :target: ../auto_examples/plot_anomaly_bench.html
-   :align: center
-   :scale: 50
-
 .. topic:: Examples:
 
   * See :ref:`sphx_glr_auto_examples_plot_anomaly_comparison.py`
@@ -131,8 +120,9 @@ a test set by default.
     :class:`neighbors.LocalOutlierFactor` and
     :class:`covariance.EllipticEnvelope`.
     
-  * See :ref:`sphx_glr_auto_examples_plot_anomaly_bench.py` for an anomaly
-    detection's benchmark.
+  * See :ref:`sphx_glr_auto_examples_plot_anomaly_bench.py` for
+    an example showing how to evaluate outlier detection estimators
+    using ROC curves.
     
 Novelty Detection
 =================
