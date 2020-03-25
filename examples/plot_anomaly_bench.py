@@ -3,17 +3,14 @@
 Anomaly detection's ROC benchmarks
 ==================================
 
-This example benchmarks outlier detection algorithms using ROC curves.
-The data are from classical anomaly detection datasets, and the algorithms'
-performance is assessed in an outlier detection context:
+This example benchmarks outlier detection algorithms using ROC curves
+on classical anomaly detection datasets. The algorithm performance
+is assessed in an outlier detection context:
 
 1. The algorithms are trained on the whole dataset which is assumed to contain
 outliers.
 2. The ROC curve is computed on the same dataset using the knowledge of the
 labels.
-
-This experiment uses area under the ROC curve score (AUC) to compare
-the performance of anomaly detection algorithms.
 """
 
 from time import time
