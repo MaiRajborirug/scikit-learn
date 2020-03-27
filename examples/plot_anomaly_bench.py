@@ -1,124 +1,143 @@
 """
-==================================
-Anomaly detection's ROC benchmarks
-==================================
-
-This example benchmarks outlier detection algorithms using ROC curves
-on classical anomaly detection datasets. The algorithm performance
-is assessed in an outlier detection context:
-
-1. The algorithms are trained on the whole dataset which is assumed to contain
-outliers.
-2. The ROC curve is computed on the same dataset using the knowledge of the
-labels.
-
-
-Interpreting the ROC plot
--------------------------
-The algorithm performance relates to how good the true positive rate (TPR)
-is at low value of the false positive rate (FPR). The better algorithm
-have the curve on the top-left of the plot and the area under curve (AUC)
-close to 1. The diagonal dash line represnts a total random classification
-of outliers and inliers.
+============================================================================
+Comparing anomaly detection algorithms for outlier detection on toy datasets
+============================================================================
+This example shows characteristics of different anomaly detection algorithms
+on 2D datasets. Datasets contain one or two modes (regions of high density)
+to illustrate the ability of algorithms to cope with multimodal data.
+For each dataset, 15% of samples are generated as random uniform noise. This
+proportion is the value given to the nu parameter of the OneClassSVM and the
+contamination parameter of the other outlier detection algorithms.
+Decision boundaries between inliers and outliers are displayed in black
+except for Local Outlier Factor (LOF) as it has no predict method to be applied
+on new data when it is used for outlier detection.
+The :class:`sklearn.svm.OneClassSVM` is known to be sensitive to outliers and
+thus does not perform very well for outlier detection. This estimator is best
+suited for novelty detection when the training set is not contaminated by
+outliers. That said, outlier detection in high-dimension, or without any
+assumptions on the distribution of the inlying data is very challenging, and a
+One-class SVM might give useful results in these situations depending on the
+value of its hyperparameters.
+:class:`sklearn.covariance.EllipticEnvelope` assumes the data is Gaussian and
+learns an ellipse. It thus degrades when the data is not unimodal. Notice
+however that this estimator is robust to outliers.
+:class:`sklearn.ensemble.IsolationForest` and
+:class:`sklearn.neighbors.LocalOutlierFactor` seem to perform reasonably well
+for multi-modal data sets. The advantage of
+:class:`sklearn.neighbors.LocalOutlierFactor` over the other estimators is
+shown for the third data set, where the two modes have different densities.
+This advantage is explained by the local aspect of LOF, meaning that it only
+compares the score of abnormality of one sample with the scores of its
+neighbors.
+Finally, for the last data set, it is hard to say that one sample is more
+abnormal than another sample as they are uniformly distributed in a
+hypercube. Except for the :class:`sklearn.svm.OneClassSVM` which overfits a
+little, all estimators present decent solutions for this situation. In such a
+case, it would be wise to look more closely at the scores of abnormality of
+the samples as a good estimator should assign similar scores to all the
+samples.
+While these examples give some intuition about the algorithms, this
+intuition might not apply to very high dimensional data.
+Finally, note that parameters of the models have been here handpicked but
+that in practice they need to be adjusted. In the absence of labelled data,
+the problem is completely unsupervised so model selection can be a challenge.
 """
 
-from time import time
+# Author: Alexandre Gramfort <alexandre.gramfort@inria.fr>
+#         Albert Thomas <albert.thomas@telecom-paristech.fr>
+# License: BSD 3 clause
+
+import time
+
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
-from sklearn.neighbors import LocalOutlierFactor
+
+from sklearn import svm
+from sklearn.datasets import make_moons, make_blobs
+from sklearn.covariance import EllipticEnvelope
 from sklearn.ensemble import IsolationForest
-from sklearn.metrics import roc_curve, auc
-from sklearn.datasets import fetch_kddcup99, fetch_covtype
-from sklearn.preprocessing import LabelBinarizer
+from sklearn.neighbors import LocalOutlierFactor
 
 print(__doc__)
 
-random_state = 1  # to control the random selection of anomalies in SA
+matplotlib.rcParams['contour.negative_linestyle'] = 'solid'
 
-# datasets
-datasets = ["http", "smtp", "SA", "SF", "forestcover"]
-# outlier detection models
-models = [
-    ("LOF", LocalOutlierFactor(n_neighbors=20, contamination="auto")),
-    ("IF", IsolationForest(n_jobs=-1, random_state=random_state,
-                           behaviour="new", contamination="auto")),
-]
+# Example settings
+n_samples = 300
+outliers_fraction = 0.15
+n_outliers = int(outliers_fraction * n_samples)
+n_inliers = n_samples - n_outliers
 
-plt.figure(figsize=(5, len(datasets) * 3))
-for dataset_idx, dataset_name in enumerate(datasets):
-    plt.subplot(len(datasets), 1, dataset_idx + 1)
-    # loading and vectorization
-    print("loading data: ", str(dataset_idx + 1))
-    if dataset_name in ["http", "smtp", "SA", "SF"]:
-        dataset = fetch_kddcup99(
-            subset=dataset_name, percent10=True, random_state=random_state
-        )
-        X = dataset.data
-        y = dataset.target
+# define outlier/anomaly detection methods to be compared
+anomaly_algorithms = [
+    ("Robust covariance", EllipticEnvelope(contamination=outliers_fraction)),
+    ("One-Class SVM", svm.OneClassSVM(nu=outliers_fraction, kernel="rbf",
+                                      gamma=0.1)),
+    ("Isolation Forest", IsolationForest(contamination=outliers_fraction,
+                                         random_state=42)),
+    ("Local Outlier Factor", LocalOutlierFactor(
+        n_neighbors=35, contamination=outliers_fraction))]
 
-    if dataset_name == "forestcover":
-        dataset = fetch_covtype()
-        X = dataset.data
-        y = dataset.target
-        # normal data are those with attribute 2
-        # abnormal those with attribute 4
-        s = (y == 2) + (y == 4)
-        X = X[s, :]
-        y = y[s]
-        y = (y != 2).astype(int)
+# Define datasets
+blobs_params = dict(random_state=0, n_samples=n_inliers, n_features=2)
+datasets = [
+    make_blobs(centers=[[0, 0], [0, 0]], cluster_std=0.5,
+               **blobs_params)[0],
+    make_blobs(centers=[[2, 2], [-2, -2]], cluster_std=[0.5, 0.5],
+               **blobs_params)[0],
+    make_blobs(centers=[[2, 2], [-2, -2]], cluster_std=[1.5, .3],
+               **blobs_params)[0],
+    4. * (make_moons(n_samples=n_samples, noise=.05, random_state=0)[0] -
+          np.array([0.5, 0.25])),
+    14. * (np.random.RandomState(42).rand(n_samples, 2) - 0.5)]
 
-    print("vectorizing data")
+# Compare given classifiers under given settings
+xx, yy = np.meshgrid(np.linspace(-7, 7, 150),
+                     np.linspace(-7, 7, 150))
 
-    if dataset_name == "SF":
-        lb = LabelBinarizer()
-        x1 = lb.fit_transform(X[:, 1].astype(str))
-        X = np.c_[X[:, :1], x1, X[:, 2:]]
-        y = (y != b"normal.").astype(int)
+plt.figure(figsize=(len(anomaly_algorithms) * 2 + 3, 12.5))
+plt.subplots_adjust(left=.02, right=.98, bottom=.001, top=.96, wspace=.05,
+                    hspace=.01)
 
-    if dataset_name == "SA":
-        lb = LabelBinarizer()
-        x1 = lb.fit_transform(X[:, 1].astype(str))
-        x2 = lb.fit_transform(X[:, 2].astype(str))
-        x3 = lb.fit_transform(X[:, 3].astype(str))
-        X = np.c_[X[:, :1], x1, x2, x3, X[:, 4:]]
-        y = (y != b"normal.").astype(int)
+plot_num = 1
+rng = np.random.RandomState(42)
 
-    if dataset_name == "http" or dataset_name == "smtp":
-        y = (y != b"normal.").astype(int)
+for i_dataset, X in enumerate(datasets):
+    # Add outliers
+    X = np.concatenate([X, rng.uniform(low=-6, high=6,
+                       size=(n_outliers, 2))], axis=0)
 
-    X = X.astype(float)
+    for name, algorithm in anomaly_algorithms:
+        t0 = time.time()
+        algorithm.fit(X)
+        t1 = time.time()
+        plt.subplot(len(datasets), len(anomaly_algorithms), plot_num)
+        if i_dataset == 0:
+            plt.title(name, size=18)
 
-    print("Estimator processing...")
-    for model_name, model in models:
-        tstart = time()
-        model.fit(X)
-        fit_time = time() - tstart
-        if model_name == "LOF":
-            scoring = -model.negative_outlier_factor_
-            # the lower, the more normal
-        if model_name == "IF":
-            scoring = -model.fit(X).decision_function(X)
+        # fit the data and tag outliers
+        if name == "Local Outlier Factor":
+            y_pred = algorithm.fit_predict(X)
+        else:
+            y_pred = algorithm.fit(X).predict(X)
 
-        fpr, tpr, thresholds = roc_curve(y, scoring)
-        AUC = auc(fpr, tpr)
-        plt.plot(
-            fpr,
-            tpr,
-            lw=1,
-            label=(
-                model_name,
-                ": ROC for %s (area = %0.3f, train-time: %0.2fs)"
-                % (dataset_name, AUC, fit_time),
-            ),
-        )
+        # plot the levels lines and the points
+        if name != "Local Outlier Factor":  # LOF does not implement predict
+            Z = algorithm.predict(np.c_[xx.ravel(), yy.ravel()])
+            Z = Z.reshape(xx.shape)
+            plt.contour(xx, yy, Z, levels=[0], linewidths=2, colors='black')
 
-    plt.xlim([-0.05, 1.05])
-    plt.ylim([-0.05, 1.05])
-    plt.legend(loc="lower right")
-    if dataset_idx == 0:
-        plt.title("Receiver operating characteristic")
-    if dataset_idx == len(datasets) - 1:
-        plt.xlabel("False Positive Rate")
-        plt.ylabel("True Positive Rate")
+        colors = np.array(['#377eb8', '#ff7f00'])
+        plt.scatter(X[:, 0], X[:, 1], s=10, color=colors[(y_pred + 1) // 2])
+
+        plt.xlim(-7, 7)
+        plt.ylim(-7, 7)
+        plt.xticks(())
+        plt.yticks(())
+        plt.text(.99, .01, ('%.2fs' % (t1 - t0)).lstrip('0'),
+                 transform=plt.gca().transAxes, size=15,
+                 horizontalalignment='right')
+        plot_num += 1
 
 plt.show()
