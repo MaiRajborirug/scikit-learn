@@ -19,7 +19,7 @@ Interpreting the ROC plot
 The algorithm performance relates to how good the true positive rate (TPR)
 is at low value of the false positive rate (FPR). The better algorithm
 have the curve on the top-left of the plot and the area under curve (AUC)
-close to 1. The diagonal dash line represnts a total random classification
+close to 1. The diagonal dashed line represents a random classification
 of outliers and inliers.
 """
 
@@ -41,7 +41,7 @@ datasets = ["http", "smtp", "SA", "SF", "forestcover"]
 # outlier detection models
 models = [
     ("LOF", LocalOutlierFactor(n_neighbors=20, contamination="auto")),
-    ("IF", IsolationForest(n_jobs=-1, random_state=random_state,
+    ("IF", IsolationForest(n_jobs=1, random_state=random_state,
                            contamination="auto")),
 ]
 
