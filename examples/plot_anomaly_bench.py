@@ -112,14 +112,14 @@ for dataset_idx, dataset_name in enumerate(datasets):
 
         fpr, tpr, thresholds = roc_curve(y, scoring)
         AUC = auc(fpr, tpr)
-        plt.plot(fpr, tpr, lw=1,
-                 label=(model_name,
-                        ": ROC for %s (area = %0.3f, train-time: %0.2fs)"
-                        % (dataset_name, AUC, fit_time)))
+        label_ = str(model_name
+                     + ": ROC for %s (area = %0.3f, train-time: %0.2fs)"
+                     % (dataset_name, AUC, fit_time))
+        plt.plot(fpr, tpr, lw=1, label=label_)
 
     plt.xlim([-0.05, 1.05])
     plt.ylim([-0.05, 1.05])
-    plt.legend(loc="lower right")
+    plt.legend(loc="best")
     if dataset_idx == 0:
         plt.title("Receiver operating characteristic")
     if dataset_idx == len(datasets) - 1:
