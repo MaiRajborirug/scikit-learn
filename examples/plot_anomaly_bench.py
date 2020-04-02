@@ -113,7 +113,7 @@ for dataset_idx, dataset_name in enumerate(datasets):
         fpr, tpr, thresholds = roc_curve(y, scoring)
         AUC = auc(fpr, tpr)
         label_ = str(model_name
-                     + ": ROC for %s (AUC = %0.3f, \u0394t: %0.2fs)"
+                     + ": %s (AUC = %0.3f, train time: %0.2fs)"
                      % (dataset_name, AUC, fit_time))
         plt.plot(fpr, tpr, lw=1, label=label_)
 
@@ -121,7 +121,7 @@ for dataset_idx, dataset_name in enumerate(datasets):
     plt.ylim([-0.05, 1.05])
     plt.legend(loc="lower right")
     if dataset_idx == 0:
-        plt.title("Receiver operating characteristic")
+        plt.title("Receiver operating characteristic (ROC)")
     if dataset_idx == len(datasets) - 1:
         plt.xlabel("False Positive Rate")
         plt.ylabel("True Positive Rate")
