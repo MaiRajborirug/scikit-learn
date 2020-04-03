@@ -41,7 +41,7 @@ datasets = ["http", "smtp", "SA", "SF", "forestcover"]
 # outlier detection models
 models = [
     ("LOF", LocalOutlierFactor(n_neighbors=20, contamination="auto")),
-    ("IF", IsolationForest(n_jobs=1, random_state=random_state,
+    ("IF", IsolationForest(random_state=random_state,
                            contamination="auto")),
 ]
 
