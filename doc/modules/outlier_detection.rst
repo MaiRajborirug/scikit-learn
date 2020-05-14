@@ -98,8 +98,8 @@ Outlier Factor (LOF) does not show a decision boundary in black as it
 has no predict method to be applied on new data when it is used for outlier
 detection.
 
-.. figure:: ../auto_examples/images/sphx_glr_plot_anomaly_comparison_001.png
-   :target: ../auto_examples/plot_anomaly_comparison.html
+.. figure:: ../auto_examples/miscellaneous/images/sphx_glr_plot_anomaly_comparison_001.png
+   :target: ../auto_examples/miscellaneous/plot_anomaly_comparison.html
    :align: center
    :scale: 50
 
@@ -109,21 +109,21 @@ The :class:`svm.OneClassSVM` is known to be sensitive to outliers and thus
 does not perform very well for outlier detection. Finally,
 :class:`covariance.EllipticEnvelope` assumes the data is Gaussian and learns
 an ellipse. For more details on the different estimators refer to the example
-:ref:`sphx_glr_auto_examples_plot_anomaly_comparison.py` and the sections
-hereunder.
+:ref:`sphx_glr_auto_examples_miscellaneous_plot_anomaly_comparison.py` and the
+sections hereunder.
 
 .. topic:: Examples:
 
-  * See :ref:`sphx_glr_auto_examples_plot_anomaly_comparison.py`
+  * See :ref:`sphx_glr_auto_examples_miscellaneous_plot_anomaly_comparison.py`
     for a comparison of the :class:`svm.OneClassSVM`, the
     :class:`ensemble.IsolationForest`, the
     :class:`neighbors.LocalOutlierFactor` and
     :class:`covariance.EllipticEnvelope`.
-    
-  * See :ref:`sphx_glr_auto_examples_plot_anomaly_bench.py` for
+
+  * See :ref:`sphx_glr_auto_examples_miscellaneous_plot_anomaly_bench.py` for
     an example showing how to evaluate outlier detection estimators
     using ROC curves.
-    
+
 Novelty Detection
 =================
 
@@ -274,8 +274,8 @@ allows you to add more trees to an already fitted model::
    * See :ref:`sphx_glr_auto_examples_ensemble_plot_isolation_forest.py` for
      an illustration of the use of IsolationForest.
 
-   * See :ref:`sphx_glr_auto_examples_plot_anomaly_comparison.py` for a
-     comparison of :class:`ensemble.IsolationForest` with
+   * See :ref:`sphx_glr_auto_examples_miscellaneous_plot_anomaly_comparison.py`
+     for a comparison of :class:`ensemble.IsolationForest` with
      :class:`neighbors.LocalOutlierFactor`,
      :class:`svm.OneClassSVM` (tuned to perform like an outlier detection
      method) and a covariance-based outlier detection with
@@ -343,8 +343,8 @@ This strategy is illustrated below.
    * See :ref:`sphx_glr_auto_examples_neighbors_plot_lof_outlier_detection.py`
      for an illustration of the use of :class:`neighbors.LocalOutlierFactor`.
 
-   * See :ref:`sphx_glr_auto_examples_plot_anomaly_comparison.py` for a
-     comparison with other anomaly detection methods.
+   * See :ref:`sphx_glr_auto_examples_miscellaneous_plot_anomaly_comparison.py`
+     for a comparison with other anomaly detection methods.
 
 .. topic:: References:
 
